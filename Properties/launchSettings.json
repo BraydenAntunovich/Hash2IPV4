@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MD5toIPV4_hashcat": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\hashcat\" eea88cd0d9a7ba26282fc786713bbbb6"
+    }
+  }
+}
