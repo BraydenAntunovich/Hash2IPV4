@@ -1,5 +1,5 @@
 # MD5toIPV4
-A C# (.NET 8.0) class to assist in reversal of MD5 hashes back to their original IPv4 addresses, using [`hashcat`](https://github.com/hashcat/hashcat).
+A C# (.NET 8.0) class to assist in reversal of MD5 hashes back to their original IPv4 addresses, using [hashcat](https://github.com/hashcat/hashcat).
 Designed for cybersecurity professionals and forensic analysts, it automates the cracking process with a focus on MD5 hashes known to encode IPv4 addresses.
 
 ## Features
@@ -13,4 +13,4 @@ Designed for cybersecurity professionals and forensic analysts, it automates the
 ## Prerequisites
 
 - .NET 8.0 SDK.
-- `hashcat` installation. Extract `hashcat`'s [`binaries`](https://hashcat.net/hashcat/) to a folder, pass the folder path to MD5toIPV4's constructor.
+- `hashcat` installation. Extract `hashcat`'s [binaries](https://hashcat.net/hashcat/) to a folder, pass the folder path to MD5toIPV4's constructor.
