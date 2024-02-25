@@ -4,10 +4,12 @@ Designed for cybersecurity professionals and forensic analysts, it automates the
 
 ## Features
 
+- Extremely fast, utilising ``hashcat``'s Optimized Kernel.
 - Automated MD5 hash cracking to IPv4.
 - Leverages GPU and CPU via `hashcat`.
 - Real-time progress monitoring of `hashcat`.
 - Automatic termination of `hashcat` upon completion.
+- Hits are cached on-disk via a `hashcat` potfile.
 - Cross-platform support.
 
 ## Prerequisites
