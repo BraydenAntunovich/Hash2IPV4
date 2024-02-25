@@ -670,7 +670,7 @@ public class MD5toIPV4
         var startInfo = new ProcessStartInfo
         {
             FileName = this.hashcatExecutablePath,
-            Arguments = $"-m 0 -d 1 -a 3 {hash} -w 3 {this.maskPatternsPath} --potfile-path {this.potfilePath}",
+            Arguments = $"-m 0 -O -a 3 {hash} -w 3 {this.maskPatternsPath} --potfile-path {this.potfilePath}",
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
