@@ -706,13 +706,16 @@ public class MD5toIPV4
         hashcatProcess.OutputDataReceived += (sender, args) =>
         {
             Console.WriteLine(args.Data);
-            if (args.Data != null && (args.Data.Contains("Status...........: Cracked") ||
-                                      args.Data.Contains("Recovered........: 1/1 (100.00%)") ||
-                                      (args.Data.Contains("Guess.Queue") && args.Data.Contains("100.00%"))))
+            if (args.Data != null)
             {
-                if (!hashcatProcess.HasExited)
-                {
-                    hashcatProcess.Kill();
+                if (args.Data.Contains("Status...........: Cracked") ||
+                    args.Data.Contains("Recovered........: 1/1 (100.00%)") ||
+                    (args.Data.Contains("Guess.Queue") && args.Data.Contains("100.00%")))
+                    { 
+                    if (!hashcatProcess.HasExited)
+                    {
+                        hashcatProcess.Kill();
+                    }
                 }
             }
         };
@@ -726,7 +729,7 @@ public class MD5toIPV4
         if (File.Exists(this.potfilePath))
         {
             string[] potfileContents = await File.ReadAllLinesAsync(this.potfilePath);
-            foreach (string? line in potfileContents)
+            foreach (string line in potfileContents)
             {
                 if (line.Contains(hash))
                 {
