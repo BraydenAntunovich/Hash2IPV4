@@ -37,7 +37,7 @@ public class MD5toIPV4
         string[] octetPatterns = {
             "1?d?d", "2?1?d", "25?2", "?3?d", "?d"
             // Valid IPv4 octet: 0-255 (and you don't want leading zeroes as they are not valid octets,
-            // which is why we require using this large set of masks for hashcat - 625 to be exact [6^4 = 625])
+            // which is why we require using this large set of masks for hashcat - 625 to be exact [5^4 = 625])
             // "1?d?d" = 100-199
             // "2?1?d" = 200-249
             // "25?2" = 250-255
