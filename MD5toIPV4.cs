@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 public class MD5toIPV4
 {
@@ -10,8 +11,9 @@ public class MD5toIPV4
 
     public MD5toIPV4(string hashcatDir)
     {
-        this.hashcatDir = hashcatDir; // Extract hashcat binaries to this directory, download: https://hashcat.net/hashcat/
-        this.hashcatExecutablePath = Path.Combine(hashcatDir, "hashcat.exe");
+        this.hashcatDir = hashcatDir;
+        this.hashcatExecutablePath = Path.Combine(hashcatDir, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "hashcat.exe" : "hashcat");
+        SetExecutablePermissions(this.hashcatExecutablePath);
         this.potfilePath = Path.Combine(hashcatDir, "hashcat.potfile");
         this.maskPatternsPath = Path.Combine(Directory.GetCurrentDirectory(), "ipv4.hcmask");
         GenerateMaskPatternsFile();
@@ -31,7 +33,7 @@ public class MD5toIPV4
     private void GenerateMaskPatternsFile()
     {
         // Cheers johnjohnsp1 https://github.com/johnjohnsp1/hexhosts/blob/master/ipv4.hcmask
-        var patterns = new List<string>
+        List<string> patterns = new List<string>
         {
             "01234,012345,123456789,1?d?d.1?d?d.1?d?d.1?d?d",
             "01234,012345,123456789,1?d?d.1?d?d.1?d?d.2?1?d",
@@ -663,14 +665,33 @@ public class MD5toIPV4
         File.WriteAllLines(this.maskPatternsPath, patterns);
     }
 
+    private void SetExecutablePermissions(string filePath)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "chmod",
+                Arguments = $"+x \"{filePath}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            Process process = new Process { StartInfo = startInfo };
+
+            process.Start();
+            process.WaitForExit(1337);
+        }
+    }
+
     public async Task<string> CrackHashAsync(string hash)
     {
         string? result = null;
 
-        var startInfo = new ProcessStartInfo
+        ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = this.hashcatExecutablePath,
-            Arguments = $"-m 0 -O -a 3 {hash} -w 3 {this.maskPatternsPath} --potfile-path {this.potfilePath}",
+            Arguments = $"-m 0 -O -a 3 {hash} -w 3 \"{this.maskPatternsPath}\" --potfile-path \"{this.potfilePath}\"",
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -685,16 +706,13 @@ public class MD5toIPV4
         hashcatProcess.OutputDataReceived += (sender, args) =>
         {
             Console.WriteLine(args.Data);
-            if (args.Data != null)
+            if (args.Data != null && (args.Data.Contains("Status...........: Cracked") ||
+                                      args.Data.Contains("Recovered........: 1/1 (100.00%)") ||
+                                      (args.Data.Contains("Guess.Queue") && args.Data.Contains("100.00%"))))
             {
-                if (args.Data.Contains("Status...........: Cracked") ||
-                    args.Data.Contains("Recovered........: 1/1 (100.00%)") ||
-                    (args.Data.Contains("Guess.Queue") && args.Data.Contains("100.00%")))
+                if (!hashcatProcess.HasExited)
                 {
-                    if (!hashcatProcess.HasExited)
-                    {
-                        hashcatProcess.Kill();
-                    }
+                    hashcatProcess.Kill();
                 }
             }
         };
@@ -707,8 +725,8 @@ public class MD5toIPV4
         // After hashcat finishes, check the potfile for the hash and its corresponding plaintext
         if (File.Exists(this.potfilePath))
         {
-            var potfileContents = await File.ReadAllLinesAsync(this.potfilePath);
-            foreach (var line in potfileContents)
+            string[] potfileContents = await File.ReadAllLinesAsync(this.potfilePath);
+            foreach (string? line in potfileContents)
             {
                 if (line.Contains(hash))
                 {

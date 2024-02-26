@@ -11,8 +11,8 @@
         string hashcatDir = args[0];
         string hash = args[1];
 
-        var hashcatProcess = new MD5toIPV4(hashcatDir); // Pass the hashcat directory to the constructor
-        string result = await hashcatProcess.CrackHashAsync(hash); // Crack the hash asynchronously
+        MD5toIPV4 mD5toIPV4 = new MD5toIPV4(hashcatDir); // Pass the hashcat directory to the constructor
+        string result = await mD5toIPV4.CrackHashAsync(hash); // Crack the hash asynchronously
 
         if (result != null)
         {
