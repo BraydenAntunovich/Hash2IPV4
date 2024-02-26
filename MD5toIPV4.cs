@@ -684,7 +684,7 @@ public class MD5toIPV4
         }
     }
 
-    public async Task<string> CrackHashAsync(string hash)
+    public async Task<string> CrackHashAsync(string hash, bool displayHashcatConsole = false)
     {
         string? result = null;
 
@@ -705,23 +705,21 @@ public class MD5toIPV4
         hashcatProcess.BeginOutputReadLine();
         hashcatProcess.OutputDataReceived += (sender, args) =>
         {
-            Console.WriteLine(args.Data);
+            if (displayHashcatConsole) Console.WriteLine(args.Data);
             if (args.Data != null)
             {
                 if (args.Data.Contains("Status...........: Cracked") ||
                     args.Data.Contains("Recovered........: 1/1 (100.00%)") ||
                     (args.Data.Contains("Guess.Queue") && args.Data.Contains("100.00%")))
-                    { 
-                    if (!hashcatProcess.HasExited)
-                    {
-                        hashcatProcess.Kill();
-                    }
+                {
+                    if (!hashcatProcess.HasExited) hashcatProcess.Kill();
                 }
             }
         };
 
         hashcatProcess.BeginErrorReadLine();
-        hashcatProcess.ErrorDataReceived += (sender, args) => Console.WriteLine(args.Data);
+
+        if (displayHashcatConsole) hashcatProcess.ErrorDataReceived += (sender, args) => Console.WriteLine(args.Data);
 
         hashcatProcess.WaitForExit();
 
@@ -739,15 +737,9 @@ public class MD5toIPV4
             }
         }
 
-        if (File.Exists(this.maskPatternsPath))
-        {
-            File.Delete(this.maskPatternsPath);
-        }
+        if (File.Exists(this.maskPatternsPath)) File.Delete(this.maskPatternsPath);
 
-        if (Directory.Exists("kernel"))
-        {
-            Directory.Delete("kernel", true);
-        }
+        if (Directory.Exists("kernel")) Directory.Delete("kernel", true);
 
 #pragma warning disable CS8603 // Possible null reference return.
         return result;
