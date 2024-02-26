@@ -723,6 +723,11 @@ public class MD5toIPV4
             File.Delete(this.maskPatternsPath);
         }
 
+        if (Directory.Exists("kernel"))
+        {
+            Directory.Delete("kernel", true);
+        }
+
 #pragma warning disable CS8603 // Possible null reference return.
         return result;
 #pragma warning restore CS8603 // Possible null reference return.
